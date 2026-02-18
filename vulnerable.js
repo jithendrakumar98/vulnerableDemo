@@ -28,20 +28,28 @@ router.get("/ping",(req,res)=>{
 
 router.get("/login",(req,res)=>{
 
+// vulnerable cookie (accessible to JS)
+res.setHeader(
+"Set-Cookie",
+"session=I am the Cookie from Local storage; Path=/"
+);
+
 res.send(`
-<h2>Vulnerable Login</h2>
+<h2>Vulnerable Login Successful</h2>
 
 <script>
 
-// store sensitive token in localStorage
-localStorage.setItem("token","I am the Cookie from Local storage");
+// also store in localStorage
+localStorage.setItem(
+"token",
+"I am the Cookie from Local storage"
+);
 
-// BAD PRACTICE: copy localStorage token into cookie
-document.cookie="session="+localStorage.getItem("token");
-
-document.write("Token stored in localStorage AND cookie");
+document.write("Session created.<br>");
+document.write("Cookie: "+document.cookie);
 
 </script>
+
 `);
 
 });
