@@ -470,6 +470,26 @@ Step 4: Session stolen`
 );
 
 }
+function loginVulnerable(){
+
+document.getElementById("frame").src="/vulnerable/login";
+
+setTimeout(()=>{
+alert("Vulnerable session cookie created.\nNow run XSS attack.");
+},500);
+
+}
+
+
+function loginSecure(){
+
+document.getElementById("frame").src="/secure/login";
+
+setTimeout(()=>{
+alert("Secure httpOnly session created.\nXSS cannot steal it.");
+},500);
+
+}
 
 
 
