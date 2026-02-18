@@ -42,9 +42,25 @@ res.send("<div style='color:green'>Safe ID:"+validator.escape(req.query.id)+"</d
 });
 
 router.get("/login",(req,res)=>{
-req.session.user="admin";
-res.send("<div style='color:green'>Secure Session Created</div>");
+
+res.cookie(
+"session",
+"SecureSession123",
+{
+httpOnly:true,
+sameSite:"strict"
+}
+);
+
+res.send(`
+<h2>Secure Login Successful</h2>
+
+Session stored in httpOnly cookie.
+JavaScript cannot access it.
+`);
+
 });
+;
 
 router.get("/dos",(req,res)=>{
 res.send("<div style='color:green'>Request allowed (protected)</div>");
