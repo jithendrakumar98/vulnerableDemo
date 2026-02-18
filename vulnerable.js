@@ -27,9 +27,25 @@ router.get("/ping",(req,res)=>{
 });
 
 router.get("/login",(req,res)=>{
-    res.send(`<script>localStorage.token="steal_me";</script>
-    <div style='color:red'>Token stored in localStorage</div>`);
+
+res.send(`
+<h2>Vulnerable Login</h2>
+
+<script>
+
+// store sensitive token in localStorage
+localStorage.setItem("token","I am the Cookie from Local storage");
+
+// BAD PRACTICE: copy localStorage token into cookie
+document.cookie="session="+localStorage.getItem("token");
+
+document.write("Token stored in localStorage AND cookie");
+
+</script>
+`);
+
 });
+
 
 router.get("/dos",(req,res)=>{
     const start=Date.now();
