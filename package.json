@@ -1,0 +1,17 @@
+{
+    "name": "node-security-demo",
+    "version": "3.0.0",
+    "description": "Advanced Node.js Security Demo with logging and dashboard indicators",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "express": "^4.18.2",
+        "validator": "^13.9.0",
+        "express-session": "^1.17.3",
+        "express-rate-limit": "^6.7.0",
+        "csurf": "^1.11.0",
+        "re2": "^1.19.0"
+    }
+}

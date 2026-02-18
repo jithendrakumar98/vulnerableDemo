@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Node.js Security Attack Demonstration</title>
+
+<style>
+
+body{
+font-family:Segoe UI, Arial;
+background:linear-gradient(to right,#1e3c72,#2a5298);
+color:white;
+padding:20px;
+}
+
+.container{
+max-width:1100px;
+margin:auto;
+}
+
+.section{
+background:white;
+color:black;
+padding:20px;
+margin:20px 0;
+border-radius:10px;
+box-shadow:0 4px 10px rgba(0,0,0,0.3);
+}
+
+h1{
+text-align:center;
+}
+
+.btn{
+padding:10px 15px;
+margin:5px;
+border:none;
+cursor:pointer;
+border-radius:5px;
+font-weight:bold;
+}
+
+.vuln{
+background:#e74c3c;
+color:white;
+}
+
+.sec{
+background:#27ae60;
+color:white;
+}
+
+.info{
+background:#3498db;
+color:white;
+}
+
+.btn:hover{
+opacity:0.8;
+}
+
+input{
+padding:10px;
+width:90%;
+border-radius:5px;
+border:1px solid gray;
+}
+
+iframe{
+width:100%;
+height:250px;
+border-radius:10px;
+border:2px solid #333;
+background:white;
+}
+
+#logs{
+background:black;
+color:#00ff00;
+height:200px;
+overflow:auto;
+padding:10px;
+border-radius:10px;
+}
+
+.popup{
+position:fixed;
+top:20%;
+left:30%;
+width:40%;
+background:white;
+color:black;
+border-radius:10px;
+padding:20px;
+display:none;
+box-shadow:0 0 15px black;
+}
+
+.close{
+background:red;
+color:white;
+padding:8px;
+border:none;
+cursor:pointer;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Node.js Security Vulnerability & Mitigation Demo</h1>
+
+
+
+<!-- XSS -->
+
+<div class="section">
+
+<h2>Cross Site Scripting (XSS)</h2>
+
+<p>
+Enter payload below and test vulnerable vs secure implementation.
+</p>
+
+<input id="xssPayload"
+value='<script>alert("Stolen Cookie: "+document.cookie)</script>'>
+
+<br><br>
+
+<button class="btn vuln" onclick="runXSSVulnerable()">
+Run Vulnerable Endpoint
+</button>
+
+
+<button class="btn sec" onclick="runXSSSecure()">
+Run Secure Endpoint
+</button>
+
+
+<button class="btn info" onclick="showXSSFlow()">
+Show Attack Flow
+</button>
+
+</div>
+
+
+
+<!-- SQL Injection -->
+
+<div class="section">
+
+<h2>SQL Injection</h2>
+
+<button class="btn vuln"
+onclick="attack(
+'/vulnerable/user?id=admin OR 1=1--',
+'SQL Injection Attack',
+`Attack Flow:
+
+User input modifies query logic
+
+Database returns unauthorized data
+
+Impact: Data breach`
+)">
+Run Vulnerable Endpoint
+</button>
+
+
+
+<button class="btn sec"
+onclick="attack(
+'/secure/user?id=1 OR 1=1',
+'SQL Injection Mitigation',
+`Mitigation:
+
+Parameterized query used
+
+Input treated as data
+
+Attack prevented`
+)">
+Run Secure Endpoint
+</button>
+
+</div>
+
+
+
+<!-- Command Injection -->
+
+<div class="section">
+
+<h2>Command Injection</h2>
+
+<button class="btn vuln"
+onclick="attack(
+'/vulnerable/ping?host=google.com;node -v',
+'Command Injection Attack',
+`Attack Flow:
+
+User input executed in shell
+
+Attacker executes system commands
+
+Impact: Server compromise`
+)">
+Run Vulnerable Endpoint
+</button>
+
+
+<button class="btn sec"
+onclick="attack(
+'/secure/ping?host=google.com',
+'Command Injection Mitigation',
+`Mitigation:
+
+execFile used
+
+Shell execution prevented`
+)">
+Run Secure Endpoint
+</button>
+
+</div>
+
+
+
+<!-- Session -->
+
+<div class="section">
+
+<h2>Session Hijacking</h2>
+
+<button class="btn vuln"
+onclick="attack(
+'/vulnerable/login',
+'Session Attack',
+`Attack Flow:
+
+Session stored in localStorage
+
+XSS steals session
+
+Attacker hijacks account`
+)">
+Run Vulnerable Endpoint
+</button>
+
+
+<button class="btn sec"
+onclick="attack(
+'/secure/login',
+'Session Mitigation',
+`Mitigation:
+
+Session stored in httpOnly cookie
+
+JavaScript cannot access cookie`
+)">
+Run Secure Endpoint
+</button>
+
+</div>
+
+
+
+<!-- DoS -->
+
+<div class="section">
+
+<h2>Denial of Service</h2>
+
+<button class="btn vuln"
+onclick="attack(
+'/vulnerable/dos',
+'DoS Attack',
+`Attack Flow:
+
+Server overwhelmed with requests
+
+Server becomes unavailable`
+)">
+Run Vulnerable Endpoint
+</button>
+
+
+<button class="btn sec"
+onclick="attack(
+'/secure/dos',
+'DoS Mitigation',
+`Mitigation:
+
+express-rate-limit restricts requests`
+)">
+Run Secure Endpoint
+</button>
+
+</div>
+
+
+
+<!-- ReDoS -->
+
+<div class="section">
+
+<h2>ReDoS</h2>
+
+<button class="btn vuln"
+onclick="attack(
+'/vulnerable/regex?input=aaaaaaaaaaaaaaaaaaaaaaaa!',
+'ReDoS Attack',
+`Attack Flow:
+
+Unsafe regex causes CPU spike
+
+Server blocked`
+)">
+Run Vulnerable Endpoint
+</button>
+
+
+<button class="btn sec"
+onclick="attack(
+'/secure/regex?input=aaaaaaaaaaaaaaaaaaaaaaaa!',
+'ReDoS Mitigation',
+`Mitigation:
+
+RE2 safe regex used`
+)">
+Run Secure Endpoint
+</button>
+
+</div>
+
+
+
+<h2>Application Response</h2>
+
+<iframe id="frame"></iframe>
+
+
+
+<h2>Live Logs</h2>
+
+<div id="logs"></div>
+
+
+
+<div id="popup" class="popup">
+
+<h3 id="popupTitle"></h3>
+
+<pre id="popupText"></pre>
+
+<button class="close" onclick="closePopup()">Close</button>
+
+</div>
+
+</div>
+
+
+
+
+<script>
+
+
+function attack(url,title,text){
+
+document.getElementById("popupTitle").innerText=title;
+
+document.getElementById("popupText").innerText=text;
+
+document.getElementById("popup").style.display="block";
+
+if(url!="")
+document.getElementById("frame").src=url;
+
+}
+
+
+
+function runXSSVulnerable(){
+
+let payload=document.getElementById("xssPayload").value;
+
+let encoded=encodeURIComponent(payload);
+
+alert("Simulated Attack: Stolen Cookie = " + document.cookie);
+
+attack(
+"/vulnerable/search?q="+encoded,
+"XSS Attack",
+`Attack Flow:
+
+Payload injected
+
+Browser executes script
+
+Cookie accessed
+
+Session compromised`
+);
+
+}
+
+
+
+function runXSSSecure(){
+
+let payload=document.getElementById("xssPayload").value;
+
+let encoded=encodeURIComponent(payload);
+
+attack(
+"/secure/search?q="+encoded,
+"XSS Mitigation",
+`Mitigation:
+
+validator.escape used
+
+Script rendered harmless`
+);
+
+}
+
+
+
+function showXSSFlow(){
+
+attack(
+"",
+"Detailed XSS Flow",
+`Step 1: Attacker injects script
+
+Step 2: Script executes in browser
+
+Step 3: Cookie accessed
+
+Step 4: Session stolen`
+);
+
+}
+
+
+
+function closePopup(){
+
+document.getElementById("popup").style.display="none";
+
+}
+
+
+
+async function loadLogs(){
+
+try{
+
+const res=await fetch("/logs");
+
+const data=await res.json();
+
+document.getElementById("logs").innerHTML=data.map(l=>
+
+l.time+" | "+l.type+" | "+l.endpoint+" | "+l.status
+
+).join("<br>");
+
+}catch(e){}
+
+}
+
+
+
+setInterval(loadLogs,1000);
+
+
+</script>
+
+
+</body>
+
+</html>
