@@ -62,6 +62,22 @@ JavaScript cannot access it.
 });
 ;
 
+const { execFile } = require("child_process");
+
+router.get("/ping",(req,res)=>{
+
+const host = req.query.host;
+
+// secure version using execFile
+execFile("ping", [host], (err,out,errout)=>{
+
+res.send("<div style='color:green'>" + (out || errout) + "</div>");
+
+});
+
+});
+
+
 router.get("/dos",(req,res)=>{
 res.send("<div style='color:green'>Request allowed (protected)</div>");
 });
@@ -72,3 +88,4 @@ res.send("<div style='color:green'>Safe:"+re.test(req.query.input)+"</div>");
 });
 
 module.exports=router;
+
