@@ -198,42 +198,37 @@ Run Secure Endpoint
 
 <div class="section">
 
-<h2>Command Injection</h2>
-
-<button class="btn vuln"
-onclick="attack(
-'/vulnerable/ping?host=google.com;node -v',
-'Command Injection Attack',
-`Attack Flow:
-
-User input executed in shell
-
-Attacker executes system commands
-
-Impact: Server compromise`
-)">
-Run Vulnerable Endpoint
-</button>
-
-
-<button class="btn sec"
-onclick="attack(
-'/secure/ping?host=google.com',
-'Command Injection Mitigation',
-`Mitigation:
-
-execFile used
-
-Shell execution prevented`
-)">
-Run Secure Endpoint
-</button>
-
-</div>
-
-
-
-<!-- Session -->
+    <h2>Command Injection</h2>
+    
+    <p>
+    Enter IP address or hostname to ping.  
+    Try malicious payload: <b>127.0.0.1; ls</b> or <b>127.0.0.1; node -v</b>
+    </p>
+    
+    <input id="cmdPayload"
+    value="127.0.0.1">
+    
+    <br><br>
+    
+    <button class="btn vuln"
+    onclick="runCmdVulnerable()">
+    Run Vulnerable Endpoint
+    </button>
+    
+    
+    <button class="btn sec"
+    onclick="runCmdSecure()">
+    Run Secure Endpoint
+    </button>
+    
+    
+    <button class="btn info"
+    onclick="showCmdFlow()">
+    Show Attack Flow
+    </button>
+    
+    </div>
+    
 
 <!-- Session -->
 
@@ -454,6 +449,81 @@ Script rendered harmless`
 
 }
 
+function runCmdVulnerable(){
+
+let payload=document.getElementById("cmdPayload").value;
+
+let encoded=encodeURIComponent(payload);
+
+attack(
+"/vulnerable/ping?host="+encoded,
+"Command Injection Attack",
+`Attack Flow:
+
+1. User input sent to server
+
+2. Server executes using exec()
+
+3. Shell interprets special characters like ;
+
+4. Attacker executes additional commands
+
+Payload used:
+${payload}
+
+Impact:
+Full server compromise possible`
+);
+
+}
+
+
+function runCmdSecure(){
+
+let payload=document.getElementById("cmdPayload").value;
+
+let encoded=encodeURIComponent(payload);
+
+attack(
+"/secure/ping?host="+encoded,
+"Command Injection Mitigation",
+`Mitigation:
+
+execFile() used instead of exec()
+
+Shell interpretation disabled
+
+Payload treated as data
+
+Attack prevented`
+);
+
+}
+
+
+function showCmdFlow(){
+
+attack(
+"",
+"Detailed Command Injection Flow",
+`Step 1: Attacker enters malicious input
+
+Example:
+127.0.0.1; ls
+
+Step 2: Server executes command
+
+ping 127.0.0.1; ls
+
+Step 3: Shell runs BOTH commands
+
+Step 4: Attacker executes arbitrary system commands
+
+Impact:
+Remote code execution possible`
+);
+
+}
 
 
 function showXSSFlow(){
