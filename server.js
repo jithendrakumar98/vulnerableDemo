@@ -37,4 +37,4 @@ app.get("/",(req,res)=>{
 res.sendFile(path.join(__dirname,"index.html"));
 });
 
-app.listen(3000,()=>console.log("Running http://localhost:3000"));
+app.listen(3000,()=>console.log("Updated!"));
