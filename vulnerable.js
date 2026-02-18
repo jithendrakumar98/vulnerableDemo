@@ -21,10 +21,18 @@ router.get("/user",(req,res)=>{
 });
 
 router.get("/ping",(req,res)=>{
-    exec("ping -c 1 "+req.query.host,(err,out,errout)=>{
-        res.send("<div style='color:red'>"+(out||errout)+"</div>");
+
+    const host = req.query.host;
+    
+    // Windows ping command
+    exec("ping " + host, (err,out,errout)=>{
+    
+    res.send("<div style='color:red'>" + (out || errout) + "</div>");
+    
     });
-});
+    
+    });
+    
 
 router.get("/login",(req,res)=>{
 
