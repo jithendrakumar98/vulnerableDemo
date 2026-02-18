@@ -416,7 +416,7 @@ let payload=document.getElementById("xssPayload").value;
 
 let encoded=encodeURIComponent(payload);
 
-alert("Simulated Attack: Stolen Cookie = " + document.cookie);
+//alert("Simulated Attack: Stolen Cookie = " + document.cookie);
 
 attack(
 "/vulnerable/search?q="+encoded,
