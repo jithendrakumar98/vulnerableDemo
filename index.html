@@ -234,9 +234,21 @@ Run Secure Endpoint
 
 <!-- Session -->
 
+<!-- Session -->
+
 <div class="section">
 
 <h2>Session Hijacking</h2>
+
+<p>
+Step 1: Click Login to create session cookie  
+Step 2: Run XSS attack to steal cookie
+</p>
+
+<button class="btn info"
+onclick="loginVulnerable()">
+Login (Vulnerable)
+</button>
 
 <button class="btn vuln"
 onclick="attack(
@@ -244,13 +256,21 @@ onclick="attack(
 'Session Attack',
 `Attack Flow:
 
-Session stored in localStorage
+Session stored in cookie accessible by JavaScript
 
-XSS steals session
+XSS reads cookie using document.cookie
 
-Attacker hijacks account`
+Attacker steals session
+
+Impact: Account takeover`
 )">
 Run Vulnerable Endpoint
+</button>
+
+
+<button class="btn sec"
+onclick="loginSecure()">
+Login (Secure)
 </button>
 
 
@@ -262,12 +282,15 @@ onclick="attack(
 
 Session stored in httpOnly cookie
 
-JavaScript cannot access cookie`
+JavaScript cannot access cookie
+
+Session protected`
 )">
 Run Secure Endpoint
 </button>
 
 </div>
+
 
 
 
